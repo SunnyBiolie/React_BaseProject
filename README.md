@@ -1,10 +1,12 @@
+# My Notes
+
 ## Cài đặt customize-cra
 
 `npm i customize-cra react-app-rewired -D`
 
-Create a _config-overrides.js_ file in the root directory
+- Create a _config-overrides.js_ file in the root directory
 
-*config-overrides.js*
+***config-overrides.js***
 
 ```
 module.exports = function override(config, env) {
@@ -13,7 +15,7 @@ module.exports = function override(config, env) {
 }
 ```
 
-*package.json*
+***package.json***
 
 ```
 "scripts": {
@@ -31,7 +33,9 @@ module.exports = function override(config, env) {
 
 `npm install --save-dev babel-plugin-module-resolver`
 
-Create a _.babelrc_ file in the root directory
+- Create a _.babelrc_ file in the root directory
+
+***.babelrc***
 
 ```
 {
@@ -48,9 +52,9 @@ Create a _.babelrc_ file in the root directory
 }
 ```
 
-Create a _jsconfig.json_ file in the root directory
+- Create a _jsconfig.json_ file in the root directory
 
-*jsconfig.json*
+***jsconfig.json***
 
 ```
 {
@@ -63,7 +67,7 @@ Create a _jsconfig.json_ file in the root directory
 }
 ```
 
-*config-overrides.js*
+***config-overrides.js***
 
 ```
 const { override, useBabelRc } = require('customize-cra');
@@ -77,9 +81,9 @@ module.exports = override(
 
 ## Cài đặt và cấu hình Prettier
 
-Create a _.prettierrc_ file in the root directory
+- Create a _.prettierrc_ file in the root directory
 
-*.prettierrc*
+***.prettierrc***
 
 ```
 {
@@ -103,9 +107,9 @@ Create a _.prettierrc_ file in the root directory
 }
 ```
 
-Create a _.vscode/settings.json_ file in the root directory
+- Create a _.vscode/settings.json_ file in the root directory
 
-*.vscode/settings.json*
+***.vscode/settings.json***
 
 ```
 {
@@ -120,15 +124,17 @@ Create a _.vscode/settings.json_ file in the root directory
 
 `npm install --save normalize.css`
 
-Create a _src/components/GlobalStyles/GlobalStyles.scss_ and _src/components/GlobalStyles/index.js_ files
+- Create a _src/components/GlobalStyles/GlobalStyles.scss_ and _src/components/GlobalStyles/index.js_ files
 
-*src/components/GlobalStyles/GlobalStyles.scss*
+***src/components/GlobalStyles/GlobalStyles.scss***
 
 ```
 @import 'normalize.css';
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap');
 
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -144,18 +150,26 @@ body {
 }
 ```
 
-*src/components/GlobalStyles/index.js*
+***src/components/GlobalStyles/GlobalStyles.js***
 
 ```
+import PropTypes from 'prop-types';
+
 import './GlobalStyles.scss';
-function GlobalStyles( {children} ) {
+
+function GlobalStyles({ children }) {
     return children;
 }
 
+GlobalStyles.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
 export default GlobalStyles;
 ```
+> prop-types đã có sẵn trong `react`, dùng để ràng buộc các tham số của component
 
-*src/index.js*
+***src/index.js***
 
 ```
 ...
@@ -171,9 +185,34 @@ import GlobalStyles from '~/components/GlobalStyles';
 
 `npm i react-router-dom`
 
-Create a _src/pages/Home/Home.js_ file
+- Create a _src/config/indexConfig.js_ and _src/config/routes.js_ files
 
-*src/pages/Home/Home.js*
+***_src/config/routes.js_***
+
+```
+const routes = {
+    home: '/',
+    profile: '/user/:nickname',
+};
+
+export default routes;
+```
+
+***_src/config/indexConfig.js_***
+
+```
+import routes from './routes';
+
+const config = {
+    routes,
+};
+
+export default config;
+```
+
+- Create a _src/pages/Home/Home.js_ file
+
+***src/pages/Home/Home.js***
 
 ```
 function Home() {
@@ -183,57 +222,73 @@ function Home() {
 export default Home;
 ```
 
-Create a _src/routes/routes.js_ file
+## Cấu hình Router/Layout cho dự án
+
+- Create a _src/layouts/DefautLayout/DefautLayout.js_ file
+
+***src/layouts/DefautLayout/DefautLayout.js***
 
 ```
-import Home from '~/pages/Home/Home.js';
+import PropTypes from 'prop-types';
+import classNames from 'classnames/bind';
 
-export const publicRoutes = [
-    { path: '/', component: Home },
-];
+import styles from './DefaultLayout.module.scss';
+import Header from '../components/Header/Header';
+import Footer from '../components/Footer/Footer';
 
-export const privateRoutes = [];
-```
+const cx = classNames.bind(styles);
 
-*src/App/js*
-
-```
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { publicRoutes } from '~/routes/routes-index';
-
-function App() {
+function DefaultLayout({ children }) {
     return (
-        <Router>
-            <div className="App">
-                <Routes>
-                    {publicRoutes.map(function (route, index) {
-                        const Page = route.component;
-                        return <Route key={index} path={route.path} element={<Page />} />;
-                    })}
-                </Routes>
-            </div>
-        </Router>
+        <>
+            <Header />
+            <h1>DefaultLayout</h1>
+            {children}
+            <Footer />
+        </>
     );
 }
 
-export default App;
+DefaultLayout.propTypes = {
+    children: PropTypes.node.isRequired,
+};
+
+export default DefaultLayout;
+
 ```
 
-## Cấu hình Router/Layout cho dự án
+- Create a _src/layouts/components/Header/Header.js_ and  _src/layouts/components/Footer/Footer.js_ files
 
-Create a _src/layouts/DefautLayout/DefautLayout.js_ file
+***src/layouts/components/Header/Header.js***
 
-Create a _src/layouts/components/Header/Header.js_ file
+```
+import classNames from 'classnames/bind';
+import styles from './Header.module.scss';
 
-Create a _src/layouts/layouts.js_
+const cx = classNames.bind(styles);
 
-*src/layouts/layouts.js*
+function Header() {
+    return (
+        <>
+            <h1>This is Header</h1>
+        </>
+    );
+}
+
+export default Header;
+```
+
+The same with ***src/layouts/components/Footer/Footer.js***
+
+- Create a _src/layouts/indexLayouts.js_
+
+***src/layouts/indexLayouts.js***
 
 ```
 export { default as DefaultLayout } from './DefaultLayout/DefaultLayout.js';
 ```
 
-*src/App.js*
+***src/App.js***
 
 ```
 import { Fragment } from 'react';
@@ -273,3 +328,14 @@ function App() {
 
 export default App;
 ```
+
+## Others
+
+`hooks` chứa các custom hooks
+
+`services` ...ongoing
+
+`utils` ...ongoing
+
+# End
+Based on the project architecture of F8
