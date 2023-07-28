@@ -1,70 +1,275 @@
-# Getting Started with Create React App
+## Cài đặt customize-cra
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+`npm i customize-cra react-app-rewired -D`
 
-## Available Scripts
+Create a _config-overrides.js_ file in the root directory
 
-In the project directory, you can run:
+*config-overrides.js*
 
-### `npm start`
+```
+module.exports = function override(config, env) {
+  //do stuff with the webpack config...
+  return config;
+}
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+*package.json*
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+```
+"scripts": {
+-   "start": "react-scripts start",
++   "start": "react-app-rewired start",
+-   "build": "react-scripts build",
++   "build": "react-app-rewired build",
+-   "test": "react-scripts test",
++   "test": "react-app-rewired test",
+    "eject": "react-scripts eject"
+}
+```
 
-### `npm test`
+## Cài đặt babel-plugin-module-resolver
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+`npm install --save-dev babel-plugin-module-resolver`
 
-### `npm run build`
+Create a _.babelrc_ file in the root directory
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```
+{
+    "plugins": [
+        [
+            "module-resolver",
+            {
+                "alias": {
+                    "~": "./src"
+                }
+            }
+        ]
+    ]
+}
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Create a _jsconfig.json_ file in the root directory
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+*jsconfig.json*
 
-### `npm run eject`
+```
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "~/*": ["src/*"]
+        }
+    }
+}
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+*config-overrides.js*
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+const { override, useBabelRc } = require('customize-cra');
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+module.exports = override(
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useBabelRc(),
+);
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
 
-## Learn More
+## Cài đặt và cấu hình Prettier
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Create a _.prettierrc_ file in the root directory
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+*.prettierrc*
 
-### Code Splitting
+```
+{
+    "arrowParens": "always",
+    "bracketSameLine": false,
+    "bracketSpacing": true,
+    "embeddedLanguageFormatting": "auto",
+    "htmlWhitespaceSensitivity": "css",
+    "insertPragma": false,
+    "jsxSingleQuote": false,
+    "printWidth": 120,
+    "proseWrap": "preserve",
+    "quoteProps": "as-needed",
+    "requirePragma": false,
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 4,
+    "trailingComma": "all",
+    "useTabs": false,
+    "vueIndentScriptAndStyle": false
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Create a _.vscode/settings.json_ file in the root directory
 
-### Analyzing the Bundle Size
+*.vscode/settings.json*
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
+```
 
-### Making a Progressive Web App
+## Cấu hình sử dụng CSS/SASS
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+`npm i -D sass`
 
-### Advanced Configuration
+`npm install --save normalize.css`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Create a _src/components/GlobalStyles/GlobalStyles.scss_ and _src/components/GlobalStyles/index.js_ files
 
-### Deployment
+*src/components/GlobalStyles/GlobalStyles.scss*
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+@import 'normalize.css';
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap');
 
-### `npm run build` fails to minify
+* {
+    box-sizing: border-box;
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizeSpeed;
+}
+```
+
+*src/components/GlobalStyles/index.js*
+
+```
+import './GlobalStyles.scss';
+function GlobalStyles( {children} ) {
+    return children;
+}
+
+export default GlobalStyles;
+```
+
+*src/index.js*
+
+```
+...
+import GlobalStyles from '~/components/GlobalStyles';
+...
+  <GlobalStyles>
+    <App />
+  </GlobalStyles>
+...
+```
+
+## Cấu hình Router/Layout cho dự án
+
+`npm i react-router-dom`
+
+Create a _src/pages/Home/Home.js_ file
+
+*src/pages/Home/Home.js*
+
+```
+function Home() {
+    return <h1>Dành cho bạn</h1>;
+}
+
+export default Home;
+```
+
+Create a _src/routes/routes.js_ file
+
+```
+import Home from '~/pages/Home/Home.js';
+
+export const publicRoutes = [
+    { path: '/', component: Home },
+];
+
+export const privateRoutes = [];
+```
+
+*src/App/js*
+
+```
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { publicRoutes } from '~/routes/routes-index';
+
+function App() {
+    return (
+        <Router>
+            <div className="App">
+                <Routes>
+                    {publicRoutes.map(function (route, index) {
+                        const Page = route.component;
+                        return <Route key={index} path={route.path} element={<Page />} />;
+                    })}
+                </Routes>
+            </div>
+        </Router>
+    );
+}
+
+export default App;
+```
+
+## Cấu hình Router/Layout cho dự án
+
+Create a _src/layouts/DefautLayout/DefautLayout.js_ file
+
+Create a _src/layouts/components/Header/Header.js_ file
+
+Create a _src/layouts/layouts.js_
+
+*src/layouts/layouts.js*
+
+```
+export { default as DefaultLayout } from './DefaultLayout/DefaultLayout.js';
+```
+
+*src/App.js*
+
+```
+import { Fragment } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { publicRoutes } from '~/routes/index_routes';
+import DefaultLayout from '~/layouts/index_layouts';
+
+function App() {
+    return (
+        <Router>
+            <div className="App">
+                <Routes>
+                    {publicRoutes.map(function (route, index) {
+                        let Layout = DefaultLayout;
+                        if (route.layout) Layout = route.layout;
+                        else if (route.layout === null) Layout = Fragment;
+
+                        const Page = route.component;
+
+                        return (
+                            <Route
+                                key={index}
+                                path={route.path}
+                                element={
+                                    <Layout>
+                                        <Page />
+                                    </Layout>
+                                }
+                            />
+                        );
+                    })}
+                </Routes>
+            </div>
+        </Router>
+    );
+}
+
+export default App;
+```
